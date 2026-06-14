@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Sangeet · Find Your Seat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Jost:wght@400;500&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --font-script:'Allura', cursive;
+    --font-body:'Jost','Segoe UI',system-ui,sans-serif;
+    --paper:#FBF5F2; --card:#ffffff; --ink:#47463e; --muted:#a2938b; --line:#eaddd7;
+    --rose:#cc918b; --rose-deep:#a96a64; --rose-soft:#f4e2de;
+    --sage:#94a57f; --sage-deep:#5e6e50; --sage-soft:#e8eee0;
+    --tbl-fill:#e8eee0; --tbl-stroke:#c1cdae; --tbl-ink:#5e6e50;
+    --hl:#cc918b; --hl-stroke:#a96a64;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);
+    -webkit-text-size-adjust:100%;min-height:100vh;display:flex}
+  .wrap{width:100%;max-width:440px;margin:auto;padding:34px 18px 50px;
+    display:flex;flex-direction:column;align-items:center;text-align:center}
+  .top{margin-bottom:18px}
+  .top h1{font-family:var(--font-script);font-weight:400;color:var(--ink);
+    font-size:50px;line-height:1.02;margin:0 0 6px;letter-spacing:.5px}
+  .top .date{font-family:var(--font-script);font-size:25px;color:var(--ink);line-height:1}
+  .search{position:relative;width:100%;margin:10px 0 0}
+  .search input{width:100%;padding:15px 16px;font-size:17px;border:1px solid var(--line);
+    border-radius:13px;background:var(--card);color:var(--ink);outline:none;font-family:'Lato','Segoe UI',sans-serif;text-align:left}
+  .search input:focus{border-color:var(--rose)}
+  .sugg{width:100%;margin-top:8px;background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden;text-align:left}
+  .sugg button{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;
+    padding:13px 16px;border:0;border-top:1px solid var(--line);background:none;font-size:16px;color:var(--ink);cursor:pointer;font-family:var(--font-body)}
+  .sugg button:first-child{border-top:0}
+  .sugg button:active{background:var(--rose-soft)}
+  .sugg .sub{font-size:12px;color:var(--muted)}
+  .dym{margin-top:14px;width:100%}
+  .dym p{font-size:13px;color:var(--muted);margin:0 0 10px}
+  .dym .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .dym .chips button{padding:8px 14px;border:1px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:20px;font-size:14px;cursor:pointer;font-family:var(--font-body)}
+  .notfound{margin-top:16px;color:var(--muted);font-size:14px;line-height:1.6}
+  .result{margin-top:18px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:26px 20px;text-align:center;box-shadow:0 2px 12px rgba(150,110,100,.08)}
+  .result .greet{font-family:var(--font-body);color:var(--ink);font-size:22px;font-weight:500;line-height:1.2}
+  .result .lead{font-size:13px;color:var(--ink);text-transform:uppercase;letter-spacing:2px;margin-top:30px}
+  .result .tnum{font-family:var(--font-body);font-weight:500;font-size:60px;line-height:1;color:var(--ink);margin:6px 0 2px}
+  .result .tnum.word{font-size:34px;margin-top:30px}
+  .result .tcap{font-size:13px;color:var(--muted);letter-spacing:2px}
+  .mates{margin-top:30px;text-align:left}
+  .mates h3{font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink);
+    text-align:center;margin:0 0 12px;font-weight:700}
+  .mates ul{list-style:none;margin:0;padding:0}
+  .mates li{font-size:14px;padding:6px 2px;text-align:center}
+  .mapwrap{margin-top:30px}
+  .maptitle{text-align:center;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink);font-weight:700;margin-bottom:4px}
+  svg{width:100%;height:auto;display:block}
+  .tnode circle,.tnode rect{fill:#fff;stroke:var(--line);stroke-width:1}
+  .tnode text{fill:var(--ink);font-size:13px;font-weight:500;text-anchor:middle;font-family:var(--font-body)}
+  .tnode text.maphead{font-size:9px;letter-spacing:2px;font-weight:500}
+  .tnode.hl circle,.tnode.hl rect{fill:var(--hl);stroke:var(--hl-stroke);stroke-width:2}
+  .tnode.hl text{fill:#fff}
+  .df{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:4 4}
+  .dlabel{fill:var(--ink);font-size:9px;letter-spacing:2px;text-anchor:middle}
+  .djbox{fill:#fff;stroke:var(--line);stroke-width:1}
+  .djlabel{fill:var(--ink);font-size:9px;letter-spacing:2px;text-anchor:middle}
+  .foot{font-family:'Lato','Segoe UI',sans-serif;text-align:center;font-size:13px;color:var(--muted);margin-top:28px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Tiffany &amp; Hitesh</h1>
+    <div class="date">Sangeet</div>
+  </div>
+
+  <div class="search">
+    <input id="q" type="search" autocomplete="off" autocapitalize="words"
+      placeholder="Type your name to find your table" aria-label="Search your name">
+  </div>
+
+  <div id="panel" style="width:100%"></div>
+
+  <div class="foot" id="foot">Can't find your name?<br>Please check with Sholeh, our wedding coordinator.</div>
+</div>
+
+<script src="seating-data.js"></script>
+<script>
+(function(){
+  const D = window.SEATING_DATA || {tables:{}};
+  const LAYOUT={
+    head:{cx:180,cy:196,w:104,h:22,rect:true},
+    T1:{cx:55,cy:248}, T2:{cx:103,cy:270}, T3:{cx:151,cy:292}, T4:{cx:209,cy:292}, T5:{cx:257,cy:270}, T6:{cx:305,cy:248}, T7:{cx:80,cy:308}, T8:{cx:119,cy:330}, T9:{cx:158,cy:352}, T10:{cx:202,cy:352}, T11:{cx:241,cy:330}, T12:{cx:280,cy:308}
+  };
+  const ORDER=['head','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'];
+
+  const ALL=[];
+  for(const tid in D.tables){ (D.tables[tid].guests||[]).forEach(n=> ALL.push({name:n, tid:tid})); }
+
+  const q=document.getElementById('q');
+  const panel=document.getElementById('panel');
+  const foot=document.getElementById('foot');
+
+  function norm(s){ return (s||'').toLowerCase().replace(/[^a-z ]/g,' ').replace(/\s+/g,' ').trim(); }
+  function lev(a,b){
+    const m=a.length,n=b.length; if(!m)return n; if(!n)return m;
+    let prev=Array.from({length:n+1},(_,i)=>i),cur=new Array(n+1);
+    for(let i=1;i<=m;i++){ cur[0]=i;
+      for(let j=1;j<=n;j++){ cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1)); }
+      [prev,cur]=[cur,prev];
+    }
+    return prev[n];
+  }
+  function tableLabel(tid){ return (D.tables[tid]&&D.tables[tid].label)||tid; }
+
+  function buildMap(hlTid){
+    let s='<svg viewBox="0 0 360 392" role="img" aria-label="Room map">';
+    s+='<rect class="df" x="105" y="18" width="150" height="150" rx="10"/>';
+    s+='<text class="dlabel" x="180" y="93" dominant-baseline="central">DANCE FLOOR</text>';
+    s+='<g transform="rotate(-35 72 78)"><rect class="djbox" x="48" y="66" width="48" height="22" rx="3"/><text class="djlabel" x="72" y="80" dominant-baseline="central">DJ</text></g>';
+    ORDER.forEach(tid=>{
+      const L=LAYOUT[tid]; if(!L) return;
+      const hl=(tid===hlTid)?' hl':'';
+      if(L.rect){
+        s+='<g class="tnode'+hl+'"><rect x="'+(L.cx-L.w/2)+'" y="'+(L.cy-L.h/2)+'" width="'+L.w+'" height="'+L.h+'" rx="6"/>'+
+           '<text class="maphead" x="'+L.cx+'" y="'+(L.cy+3)+'">HEAD TABLE</text></g>';
+      } else {
+        s+='<g class="tnode'+hl+'"><circle cx="'+L.cx+'" cy="'+L.cy+'" r="18"/>'+
+           '<text x="'+L.cx+'" y="'+(L.cy+5)+'">'+tableLabel(tid)+'</text></g>';
+      }
+    });
+    s+='</svg>';
+    return s;
+  }
+  function firstName(n){ return n.split(' ')[0]; }
+
+  function showResult(entry){
+    const tid=entry.tid, isHead=(tid==='head');
+    const label=tableLabel(tid);
+    const mates=(D.tables[tid].guests||[]).filter(n=>n!==entry.name);
+    let h='<div class="result">';
+    h+='<div class="greet">'+entry.name+'</div>';
+    if(isHead){ h+='<div class="tnum word">Head Table</div>'; }
+    else { h+='<div class="lead">Table</div><div class="tnum">'+label+'</div>'; }
+    if(mates.length){
+      h+='<div class="mates"><h3>'+(isHead?'Others at the head table':'Others at your table')+'</h3><ul>';
+      mates.forEach(n=> h+='<li>'+n+'</li>');
+      h+='</ul></div>';
+    }
+    h+='<div class="mapwrap"><div class="maptitle">Floor Map</div>'+buildMap(tid)+'</div>';
+    h+='</div>';
+    panel.innerHTML=h;
+    foot.style.display='none';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function suggestions(query){
+    const nq=norm(query);
+    const fn=e=> norm(e.name).split(' ')[0];
+    const subs=ALL.filter(e=> fn(e).includes(nq) || norm(e.name).startsWith(nq));
+    subs.sort((a,b)=>{
+      const aw=fn(a).startsWith(nq)?0:1, bw=fn(b).startsWith(nq)?0:1;
+      return aw-bw || norm(a.name).localeCompare(norm(b.name));
+    });
+    return subs.slice(0,7);
+  }
+  function fuzzyScore(query,name){
+    const nq=norm(query); const cands=[norm(name)].concat(norm(name).split(' '));
+    return Math.min.apply(null, cands.map(c=>lev(nq,c)));
+  }
+  function didYouMean(query){
+    const nq=norm(query); const lim=Math.max(2, Math.ceil(nq.length*0.5));
+    return ALL.map(e=>({e, d:fuzzyScore(query,e.name)}))
+              .sort((a,b)=>a.d-b.d).filter(x=>x.d<=lim).slice(0,4).map(x=>x.e);
+  }
+
+  function render(){
+    const v=q.value.trim();
+    if(v.length<2){ panel.innerHTML=''; foot.style.display=''; return; }
+    foot.style.display='none';
+    const subs=suggestions(v);
+    if(subs.length){
+      let h='<div class="sugg">';
+      subs.forEach((e,i)=>{ h+='<button data-i="'+i+'">'+e.name+'<span class="sub">'+(e.tid==='head'?'Head Table':'Table '+tableLabel(e.tid))+'</span></button>'; });
+      h+='</div>';
+      panel.innerHTML=h;
+      [...panel.querySelectorAll('.sugg button')].forEach((b,i)=> b.onclick=()=>showResult(subs[i]));
+    } else {
+      const dym=didYouMean(v);
+      if(dym.length){
+        let h='<div class="dym"><p>No exact match. Did you mean:</p><div class="chips">';
+        dym.forEach((e,i)=> h+='<button data-i="'+i+'">'+e.name+'</button>');
+        h+='</div></div>';
+        panel.innerHTML=h;
+        [...panel.querySelectorAll('.dym button')].forEach((b,i)=> b.onclick=()=>showResult(dym[i]));
+      } else {
+        panel.innerHTML='<div class="notfound">We couldn\'t find that name.<br>Try just your first or last name, or check with Sholeh, our wedding coordinator.</div>';
+      }
+    }
+  }
+  window.__clear=function(){ panel.innerHTML=''; foot.style.display=''; };
+  q.addEventListener('input',render);
+  q.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const s=suggestions(q.value.trim()); if(s.length===1) showResult(s[0]); else if(s.length){ const exact=s.find(x=>norm(x.name)===norm(q.value)); if(exact) showResult(exact); } } });
+})();
+</script>
+</body>
+</html>
