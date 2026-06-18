@@ -129,20 +129,14 @@
     // dance floor (pushed up, centered)
     s+='<rect class="df" x="134" y="57" width="112" height="76" rx="6"/>';
     s+='<text class="dlabel" x="190" y="95" dominant-baseline="central">DANCE FLOOR</text>';
-    s+='<text class="featlabel" x="190" y="53" dominant-baseline="central">OPEN SPACE</text>';
     // backdrop (no swing)
     s+='<rect class="feat" x="134" y="41" width="112" height="8"/><text class="featlabel" x="190" y="45" dominant-baseline="central">BACKDROP</text>';
-    // DJ table (+45deg from vertical), top-right
-    s+='<g transform="rotate(45 300 50)"><rect class="feat-soft" x="280" y="42" width="40" height="16" rx="2"/><text class="featlabel" x="300" y="51" dominant-baseline="central">DJ</text></g>';
-    // crossed-out bar (right side, not in use)
-    s+='<rect class="feat-soft" x="320" y="100" width="30" height="46" rx="2"/>';
-    s+='<line class="barx" x1="320" y1="100" x2="350" y2="146"/><line class="barx" x1="350" y1="100" x2="320" y2="146"/>';
-    // food stations: Dinner x2 (upper-left), Dessert + Appetizer (bottom-left), Bar Soda (bottom-right)
-    s+='<rect class="feat" x="18" y="104" width="58" height="18" rx="2"/><text class="featlabel" x="47" y="113" dominant-baseline="central">DINNER</text>';
-    s+='<rect class="feat" x="12" y="128" width="16" height="46" rx="2"/><text class="featlabel" x="20" y="151" dominant-baseline="central" transform="rotate(90 20 151)">DINNER</text>';
-    s+='<rect class="feat" x="18" y="258" width="64" height="24" rx="2"/><text class="featlabel" x="50" y="270" dominant-baseline="central">DESSERT</text>';
-    s+='<rect class="feat" x="90" y="258" width="78" height="24" rx="2"/><text class="featlabel" x="129" y="270" dominant-baseline="central">APPETIZER</text>';
-    s+='<rect class="feat-soft" x="328" y="246" width="32" height="42" rx="2"/><text class="featlabel" x="344" y="263" dominant-baseline="central">BAR</text><text class="featlabel" x="344" y="273" dominant-baseline="central">SODA</text>';
+    // DJ table (+45deg), fully inside the room
+    s+='<g transform="rotate(45 300 64)"><rect class="feat-soft" x="280" y="56" width="40" height="16" rx="2"/><text class="featlabel" x="300" y="65" dominant-baseline="central">DJ</text></g>';
+    // Beer / Wine / Soda bar (bottom-right)
+    s+='<rect class="feat-soft" x="328" y="246" width="32" height="42" rx="2"/><text class="featlabel" x="344" y="259" dominant-baseline="central">BEER</text><text class="featlabel" x="344" y="268" dominant-baseline="central">WINE</text><text class="featlabel" x="344" y="277" dominant-baseline="central">SODA</text>';
+    // entrance (left wall, pointing right) — reception-style chevron + label
+    s+='<path d="M 12 199 L 26 208 L 12 217" fill="none" stroke="#47463e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><text class="dlabel" x="40" y="230" dominant-baseline="central">ENTRANCE</text>';
     // tables + sweetheart
     ORDER.forEach(tid=>{
       const L=LAYOUT[tid]; if(!L) return;
